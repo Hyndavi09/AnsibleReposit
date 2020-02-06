@@ -38,6 +38,33 @@ node {
   {
   input 'Deploy to prod?'
   }
+     stage('Jfrog Artifacory Upload') {
+        def server= Artifactory.server 'Artifactory'
+                    def uploadSpec= """{
+                        "files": [{
+                        "pattern": "/home/mtadminnuvepro/.jenkins/workspace/capstone301/01-Jenkins/Code/petclinic/target/*.war",
+                        "target": "petclinic"}]
+                    }"""
+        server.upload(uploadSpec)
+        
+        }
+     
+    stage('Jfrog Artifactory download'){
+    def server= Artifactory.server 'Artifactory'
+    def downloadSpec = """{
+    "files": [
+    {
+      "pattern": "petclinic/*.war",
+      "target": "/home/mtadminnuvepro/artifacts/"
+      
+    }
+    ]
+    }"""
+    server.download(downloadSpec)
+   
+}
+
+ 
    stage('Docker-Stage-Deployment') {
    sh label: '', script: 'docker-compose up -d --build'
   }
